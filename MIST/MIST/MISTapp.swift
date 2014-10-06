@@ -11,7 +11,7 @@ import UIKit
 public class MISTapp: MIST {
     var operation: String
     var operands: Array<MIST?>
-
+    
     
     override init (){
         self.operation = ""
@@ -87,7 +87,7 @@ public class MISTapp: MIST {
             println("Unexpected end of input")
         } // if tokens.count == 0
         var tok: MISTtoken! = tokens.removeAtIndex(0)
-        if tok!.type == MISTtoken.types.EOF {
+        if tok.type == MISTtoken.types.EOF {
             tok.parseError("Unexpected end of input", row: tok.row, col: tok.col)
         }
         else if tok.type == MISTtoken.types.NUM {
@@ -107,19 +107,17 @@ public class MISTapp: MIST {
                     tokens.removeAtIndex(0)
                     if (peekType(tokens) == MISTtoken.types.CLOSE) {
                         tokens[0]!.parseError("Close paren follows comma.", row: tokens[0]!.row, col: tokens[0]!.col)
-                    } // if there's a close parem after a comma
+                    } // if there's a close paren after a comma
                 } // if there's a comma
             } // while
             tokens.removeAtIndex(0)
             return MISTapp(operation: (prefix + tok.text), operands: children)
         }// if it's a function call
-            // otherwise it's a singleton
-        else {
-            return MISTval(name: tok.text)
-        } // if it's a singleton
-        return MISTval(name: tok.text);
+        // otherwise it's a singleton
+        return MISTval(name: tok.text)
+        // if it's a singleton
     } // kernel
-
+    
     
     class func parse (str: String, prefix : String)-> MIST {
         var tokens = tokenize(str)
@@ -136,13 +134,63 @@ public class MISTapp: MIST {
     }
     
     class func tokenize (str: String) -> Array<MISTtoken>{
-        var tokens = []
+        var tokens = [MISTtoken]()
         var input = MISTinput(text: str);
-        
-        
-        return []
+        input.skipWhitespace()
+        while !input.eof(){
+            var ch = input.next()!
+            if (ch.text == "("){
+                ch.type = MISTtoken.types.OPEN
+                tokens.append(ch)
+            }
+            else if (ch.text == ")"){
+                ch.type = MISTtoken.types.CLOSE
+                tokens.append(ch)
+            }
+            else if (ch.text == ","){
+                ch.type = MISTtoken.types.COMMA
+                tokens.append(ch)
+            }
+            else if let match = ch.text.rangeOfString("[0-9-.]", options: .RegularExpressionSearch){
+                var num = ch.text
+                var c: String
+                var dot = (ch.text == ".")
+                while (
+                    (c = input.peek()) &&
+                    (c.rangeOfString("[0-9]", options: .RegularExpressionSearch) || (!dot && (c == ".")))
+                    ){
+                        input.next()
+                        num += c
+                        if (c == ".") { dot = true; }
+                } // while
+                if (num == "-") {
+                    MISTtoken.parseError("Singleton negative signs not allowed.",
+                        ch.row, ch.col)
+                } // if we only saw a negative sign
+                ch.type = MISTtoken.types.NUM;
+                ch.text = num;
+                tokens.append(ch);
+            }
+            else if (/[A-Za-z]/.test(ch.text)) {
+                var col = ch.col;
+                var row = ch.row;
+                var id = ch.text;
+                var c;
+                while ((c = input.peek()) && /[A-Za-z0-9.]/.test(c)) {
+                    id += c;
+                    input.next();
+                } // while
+                ch.type = MIST.tokens.ID;
+                ch.text = id;
+                tokens.push(ch);
+            } // if it's an id
+            else {
+                MIST.parseError("Invalid character (" + ch.text + ")", ch.row, ch.col);
+            } // else
+            
+            
+            
+        }
+        return tokens
     }
-    
-    
-    
 }
