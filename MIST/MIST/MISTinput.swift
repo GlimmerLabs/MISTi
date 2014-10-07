@@ -51,5 +51,9 @@ class MISTinput: MIST {
     } // next()
     
     func skipWhitespace(){
+        while (self.peek()?.rangeOfString("[ \t\n]", options: .RegularExpressionSearch) != nil){
+            self.next()
+        }
+        
     }
 }
