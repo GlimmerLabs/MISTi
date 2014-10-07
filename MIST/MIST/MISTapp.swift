@@ -151,41 +151,37 @@ public class MISTapp: MIST {
                 ch.type = MISTtoken.types.COMMA
                 tokens.append(ch)
             }
-            else if let match = ch.text.rangeOfString("[0-9-.]", options: .RegularExpressionSearch){
+            else if (ch.text.rangeOfString("[0-9-.]", options: .RegularExpressionSearch) != nil){
                 var num = ch.text
-                var c: String
                 var dot = (ch.text == ".")
-                while (
-                    (c = input.peek()) &&
-                    (c.rangeOfString("[0-9]", options: .RegularExpressionSearch) || (!dot && (c == ".")))
-                    ){
+                var c : String
+                while ((c = input.peek()) != nil) && ((c.rangeOfString("[0-9]", options: .RegularExpressionSearch) != nil ) || (!dot && c == "."))
+                    {
                         input.next()
                         num += c
                         if (c == ".") { dot = true; }
                 } // while
                 if (num == "-") {
-                    MISTtoken.parseError("Singleton negative signs not allowed.",
-                        ch.row, ch.col)
+                    ch.parseError("Singleton negative signs not allowed.", row: ch.row, col: ch.col)
                 } // if we only saw a negative sign
                 ch.type = MISTtoken.types.NUM;
                 ch.text = num;
                 tokens.append(ch);
             }
-            else if (/[A-Za-z]/.test(ch.text)) {
+            else if ((ch.text.rangeOfString("[A-Za-z]", options: .RegularExpressionSearch)) != nil) {
                 var col = ch.col;
                 var row = ch.row;
                 var id = ch.text;
-                var c;
-                while ((c = input.peek()) && /[A-Za-z0-9.]/.test(c)) {
+                while var c = input.peek() && c.rangeOfString("[A-Za-z0-9.]", options: .RegularExpressionSearch) {
                     id += c;
                     input.next();
                 } // while
-                ch.type = MIST.tokens.ID;
+                ch.type = MISTtoken.types.ID;
                 ch.text = id;
-                tokens.push(ch);
+                tokens.append(ch);
             } // if it's an id
             else {
-                MIST.parseError("Invalid character (" + ch.text + ")", ch.row, ch.col);
+                ch.parseError("Invalid character (" + ch.text + ")", row: ch.row, col: ch.col);
             } // else
             
             
