@@ -10,6 +10,7 @@ import UIKit
 
 class MISTinput: MIST {
     var text: String
+    var chars = [Character]();
     var pos = 0
     var row = 1
     var col = 1
@@ -17,29 +18,34 @@ class MISTinput: MIST {
     init(text:String){
         self.text = text
         self.len = text.utf16Count
+        for ch in text {
+            chars.append(ch)
+        } // for ch in text
+
     }
     
-    func eof ()->Bool{
+    func eof ()->Bool {
         return self.pos >= self.len
     } // eof()
     
-    func peek() -> String? {
+    func peek() -> Character? {
         if (eof()){
             return nil
         }
         else {
-            let returnText = text as NSString
-            return returnText.substringWithRange(NSRange(location:pos, length:0))
+            return chars[pos];
         }
     } // peek()
     
-    func next() -> MISTtoken?{
+    func next() -> MISTtoken? {
         var c = peek()
-        if (c != nil){
+        if (c == nil){
             return nil
         }
         else {
-            var result = MISTtoken(type: MISTtoken.types.UNKNOWN, text: c!, row: row, col: col)
+            var tmp = "";
+            tmp.append(c!);
+            var result = MISTtoken(type: MISTtoken.types.UNKNOWN, text: tmp, row: row, col: col)
             ++pos
             ++col
             if (c == "\n"){
@@ -50,8 +56,8 @@ class MISTinput: MIST {
         }
     } // next()
     
-    func skipWhitespace(){
-        while (self.peek()?.rangeOfString("[ \t\n]", options: .RegularExpressionSearch) != nil){
+    func skipWhitespace() {
+        while(self.peek() == " " || self.peek() == "\t" || self.peek() == "\n"){
             self.next()
         }
         

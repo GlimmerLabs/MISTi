@@ -11,6 +11,8 @@ import UIKit
 public class MISTapp: MIST {
     var operation: String
     var operands: Array<MIST?>
+    let letters = NSCharacterSet.letterCharacterSet()
+    let digits = NSCharacterSet.decimalDigitCharacterSet()
     
     
     override init (){
@@ -153,13 +155,16 @@ public class MISTapp: MIST {
             }
             else if (ch.text.rangeOfString("[0-9-.]", options: .RegularExpressionSearch) != nil){
                 var num = ch.text
-                var dot = (ch.text == ".")
-                var c : String
-                while ((c = input.peek()) != nil) && ((c.rangeOfString("[0-9]", options: .RegularExpressionSearch) != nil ) || (!dot && c == "."))
-                    {
-                        input.next()
-                        num += c
-                        if (c == ".") { dot = true; }
+                var dot = false;
+                dot = (ch.text == ".")
+                var c : Character?
+                
+                c = input.peek()
+                while ((c != nil) && (((c >= "0") && (c <= "9")) || ((!dot) && (c! == ".")))){
+                    input.next()
+                    num += String(c!)
+                    if (c == ".") { dot = true; }
+                    c = input.peek()
                 } // while
                 if (num == "-") {
                     ch.parseError("Singleton negative signs not allowed.", row: ch.row, col: ch.col)
@@ -172,8 +177,11 @@ public class MISTapp: MIST {
                 var col = ch.col;
                 var row = ch.row;
                 var id = ch.text;
-                while var c = input.peek() && c.rangeOfString("[A-Za-z0-9.]", options: .RegularExpressionSearch) {
-                    id += c;
+                var c : Character?
+                c = input.peek();
+                
+                while ((c != nil) && ((c >= "0" && c <= "9") || (c >= "A" && c <= "Z") || (c >= "a" && c >= "z") || (c == "."))) {
+                    id += String(c!);
                     input.next();
                 } // while
                 ch.type = MISTtoken.types.ID;
@@ -183,9 +191,6 @@ public class MISTapp: MIST {
             else {
                 ch.parseError("Invalid character (" + ch.text + ")", row: ch.row, col: ch.col);
             } // else
-            
-            
-            
         }
         return tokens
     }
