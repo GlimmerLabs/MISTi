@@ -2,8 +2,3 @@
 
 import UIKit
 
-var str = "d"
-
-str.rangeOfString("[0-9-.]", options: .RegularExpressionSearch)
-
-str += "og"

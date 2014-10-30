@@ -46,4 +46,12 @@ public class MIST: NSObject {
         }
         return false;
     } // MIST.hasLoop
+    class func colorWithMISTComponents(var red : Float, var green: Float, var blue: Float) -> UIColor{
+        red = 1 - (red + 1) / 2
+        blue = 1 - (blue + 1) / 2
+        green = 1 - (green + 1) / 2
+        
+        return UIColor(red: CGFloat(red), green: CGFloat(green), blue: CGFloat(blue), alpha: 1)
+        
+    }
 }

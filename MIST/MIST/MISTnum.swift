@@ -8,10 +8,10 @@
 
 import UIKit
 
-class MISTnum: MIST {
+public class MISTnum: MIST {
     var val: Double
     
-    init(val:Double){
+    public init(val:Double){
         self.val = val
     }
    

@@ -14,10 +14,8 @@ public class MISTapp: MIST {
     let letters = NSCharacterSet.letterCharacterSet()
     let digits = NSCharacterSet.decimalDigitCharacterSet()
     
-    
-    override init (){
-        self.operation = ""
-        self.operands = []
+    convenience override init (){
+        self.init(operation: "", operands: [])
     }
     
     init (operation: String, operands: Array<MIST?>){
@@ -71,8 +69,6 @@ public class MISTapp: MIST {
         return 0.1
     }
     
-    
-    
     class func peekType (tokens: Array<MISTtoken?>) -> MISTtoken.types{
         if (tokens[0] == nil) {
             return MISTtoken.types.UNKNOWN
@@ -120,7 +116,6 @@ public class MISTapp: MIST {
         // if it's a singleton
     } // kernel
     
-    
     class func parse (str: String, prefix : String)-> MIST {
         var tokens = tokenize(str)
         var result = kernel(tokens, prefix: prefix)
@@ -131,7 +126,7 @@ public class MISTapp: MIST {
         
     } // parse(exp, prefix)
     
-    public class func parse (exp: String){
+    class func parse (exp: String){
         parse(exp, prefix: "");
     }
     
@@ -194,4 +189,5 @@ public class MISTapp: MIST {
         }
         return tokens
     }
+
 }
