@@ -54,4 +54,41 @@ public class MIST: NSObject {
         return UIColor(red: CGFloat(red), green: CGFloat(green), blue: CGFloat(blue), alpha: 1)
         
     }
+    
+    class func createImage(width: UInt, height: UInt, pixelEqu: (row: UInt, col: UInt, time: NSDate) -> (red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8)) -> UIImage{
+        
+        // Set up various configurations to make the image.
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        let bytesPerPixel = UInt(4)
+        let bitsPerComponent = UInt(8)
+        let bytesPerRow = (width * bitsPerComponent * bytesPerPixel + 7) / 8
+        
+        // Build an array of pixels
+        let dataLength = Int(bytesPerRow * height)
+        var rawData = Array<UInt8>(count: dataLength, repeatedValue:0)
+        var byteIndex = UInt(0);
+        
+        for (var col = UInt(0); col < width; col++) {
+            for (var row = UInt(0); row < height; row++) {
+                var pixel = pixelEqu(row: row, col: col, time: NSDate())
+                rawData[Int(byteIndex)] = pixel.red // Red
+                rawData[Int(byteIndex + 1)] = pixel.green // Green
+                rawData[Int(byteIndex + 2)] = pixel.blue // Blue
+                rawData[Int(byteIndex + 3)] = pixel.alpha // Alpha
+                byteIndex += 4;
+
+            } // for row
+            //endian
+        } // for col
+        
+        
+        let bitmapInfo = CGImageAlphaInfo.PremultipliedLast.rawValue | CGBitmapInfo.ByteOrder32Big.rawValue
+        
+        // Build the contxt
+        let context = CGBitmapContextCreate(&rawData , width, height, bitsPerComponent, bytesPerRow, colorSpace, CGBitmapInfo(bitmapInfo))
+        
+        var imageRef = CGBitmapContextCreateImage(context)
+        let rawImage = UIImage(CGImage: imageRef)
+        return rawImage!
+    }
 }
