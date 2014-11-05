@@ -12,17 +12,11 @@ class testViewController: UIViewController {
     @IBOutlet weak var canvas: UIImageView!
     @IBOutlet weak var value: UILabel!
     
-    // http://brandontreb.com/image-manipulation-retrieving-and-updating-pixel-values-for-a-uiimage
-    func blendy(width:UInt, height:UInt) -> UIImage{
-        
-        return MIST.createImage(width, height: height, { (row, col, time) -> (UInt8, UInt8, UInt8, UInt8) in
-            
-            var color =  (Byte) ((255 * row) / width);
-            return (color, color, color, 255)
-        })
-        
-    }
     override func viewDidLoad() {
-        canvas.image = blendy(400,height: 400);
+        canvas.image = MIST.x(50, height: 50)
+    }
+    
+    override func didReceiveMemoryWarning() {
+        canvas.image = MIST.y(50, height: 50)
     }
 }

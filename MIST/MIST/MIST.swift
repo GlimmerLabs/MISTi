@@ -56,7 +56,7 @@ public class MIST: NSObject {
     }
     
     class func createImage(width: UInt, height: UInt, pixelEqu: (row: UInt, col: UInt, time: NSDate) -> (red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8)) -> UIImage{
-        
+        // http://brandontreb.com/image-manipulation-retrieving-and-updating-pixel-values-for-a-uiimage
         // Set up various configurations to make the image.
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         let bytesPerPixel = UInt(4)
@@ -67,10 +67,11 @@ public class MIST: NSObject {
         let dataLength = Int(bytesPerRow * height)
         var rawData = Array<UInt8>(count: dataLength, repeatedValue:0)
         var byteIndex = UInt(0);
+        var time = NSDate()
         
-        for (var col = UInt(0); col < width; col++) {
-            for (var row = UInt(0); row < height; row++) {
-                var pixel = pixelEqu(row: row, col: col, time: NSDate())
+        for (var row = UInt(0); row < height; row++) {
+            for (var col = UInt(0); col < width; col++) {
+                var pixel = pixelEqu(row: row, col: col, time: time)
                 rawData[Int(byteIndex)] = pixel.red // Red
                 rawData[Int(byteIndex + 1)] = pixel.green // Green
                 rawData[Int(byteIndex + 2)] = pixel.blue // Blue
@@ -90,5 +91,18 @@ public class MIST: NSObject {
         var imageRef = CGBitmapContextCreateImage(context)
         let rawImage = UIImage(CGImage: imageRef)
         return rawImage!
+    }
+    
+    class func x(width: UInt, height: UInt)->UIImage{
+        return createImage(width, height: height, pixelEqu: { (row, col, time) -> (red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) in
+            let color = UInt8(255 - ((255 * col) / width))
+            return (color, color, color, 255)
+        })
+    }
+    class func y(width: UInt, height: UInt)->UIImage{
+        return createImage(width, height: height, pixelEqu: { (row, col, time) -> (red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) in
+            let color = UInt8(255 - ((255 * row) / width))
+            return (color, color, color, 255)
+        })
     }
 }
