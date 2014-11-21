@@ -84,8 +84,7 @@ public class MISTapp: MIST {
             tok.parseError("Unexpected token (" + tok.text + ")", row: tok.row, col: tok.col)
         }
             
-        else if peekType(tokens) == MISTtoken.types.OPEN {
-            tokens.removeAtIndex(0)
+        else if tok.type == MISTtoken.types.OPEN {
             var children = Array<MIST>()
             while(peekType(tokens) != MISTtoken.types.CLOSE){
                 // The real recursion rite here

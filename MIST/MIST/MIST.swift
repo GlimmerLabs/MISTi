@@ -128,16 +128,16 @@ public class MIST: NSObject {
     
     class func render(exp:MIST, resolution:UInt) -> UIImage{
         return createImage(resolution, height: resolution, pixelEqu: { (row, col, time) -> (red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) in
+            let x = Double(col) / Double(resolution)
+            let y = Double(row) / Double(resolution)
             
-            let x = 2 * (row - (resolution / 2) / resolution)
-            let y = 2 * (col - (resolution / 2) / resolution)
-            
-            let dict: [String: Double] = ["x": Double(x) , "y": Double(y)];
+            let dict: [String: Double] = ["x": x , "y": y];
             
             let tmp = MISTapp.evaluate(exp, dict: dict);
             
-            let component = UInt8(tmp*127.5+127.5);
-            return (red: component, green: component, blue: component, alpha:255)
+            var component = 255 - (tmp*255);
+            
+            return (red: UInt8(component), green: UInt8(component), blue: UInt8(component), alpha:255)
         })
     }
 }
