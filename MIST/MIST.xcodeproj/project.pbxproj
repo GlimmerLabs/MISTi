@@ -12,7 +12,6 @@
 		D02B345419C90E1D004229DB /* MISTnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02B345319C90E1D004229DB /* MISTnum.swift */; };
 		D0460E7019D8F8A300D9A76D /* MISTtoken.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0460E6F19D8F8A300D9A76D /* MISTtoken.swift */; };
 		D0460E7219D9031B00D9A76D /* MISTinput.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0460E7119D9031B00D9A76D /* MISTinput.swift */; };
-		D0AC56A319DDEB1A00DE7175 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0AC56A219DDEB1A00DE7175 /* ViewController.swift */; };
 		D0C7346A19EF54870027529E /* testViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C7346919EF54870027529E /* testViewController.swift */; };
 		D0E5BC8019B93DAC000BDF81 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0E5BC7F19B93DAC000BDF81 /* AppDelegate.swift */; };
 		D0E5BC8719B93DAC000BDF81 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D0E5BC8519B93DAC000BDF81 /* Main.storyboard */; };
@@ -37,7 +36,6 @@
 		D02B345319C90E1D004229DB /* MISTnum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MISTnum.swift; sourceTree = "<group>"; };
 		D0460E6F19D8F8A300D9A76D /* MISTtoken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MISTtoken.swift; sourceTree = "<group>"; };
 		D0460E7119D9031B00D9A76D /* MISTinput.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MISTinput.swift; sourceTree = "<group>"; };
-		D0AC56A219DDEB1A00DE7175 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		D0C7346919EF54870027529E /* testViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = testViewController.swift; sourceTree = "<group>"; };
 		D0E5BC7A19B93DAC000BDF81 /* MIST.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MIST.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0E5BC7E19B93DAC000BDF81 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -92,7 +90,6 @@
 				D0E5BC7F19B93DAC000BDF81 /* AppDelegate.swift */,
 				D0E5BC8519B93DAC000BDF81 /* Main.storyboard */,
 				D0C7346919EF54870027529E /* testViewController.swift */,
-				D0AC56A219DDEB1A00DE7175 /* ViewController.swift */,
 				D02B344F19C90DFE004229DB /* MISTapp.swift */,
 				D0460E6F19D8F8A300D9A76D /* MISTtoken.swift */,
 				D0460E7119D9031B00D9A76D /* MISTinput.swift */,
@@ -236,7 +233,6 @@
 				D02B345219C90E0C004229DB /* MISTval.swift in Sources */,
 				D0E5BC8019B93DAC000BDF81 /* AppDelegate.swift in Sources */,
 				D0E7768419DDA3AE00AAC087 /* MIST.swift in Sources */,
-				D0AC56A319DDEB1A00DE7175 /* ViewController.swift in Sources */,
 				D0460E7019D8F8A300D9A76D /* MISTtoken.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -16,7 +16,7 @@ public class MIST: NSObject {
             // Find the deepest child
             var deepest = 0;
             for (var i = 0; i < (exp as MISTapp).operands.count; i++) {
-                deepest = max(deepest, depth((exp as MISTapp).operands[i]!));
+                deepest = max(deepest, depth((exp as MISTapp).operands[i]));
             } // for
             // And add 1
             return 1 + deepest;
@@ -38,7 +38,7 @@ public class MIST: NSObject {
         if (val is MISTapp) {
             seen!.append(val)
             for (var i = 0; i < (val as MISTapp).operands.count; i++) {
-                if (hasLoop((val as MISTapp).operands[i]!, seen: seen)) {
+                if (hasLoop((val as MISTapp).operands[i], seen: seen)) {
                     return true;
                 } // if
             } // for
@@ -77,7 +77,7 @@ public class MIST: NSObject {
                 rawData[Int(byteIndex + 2)] = pixel.blue // Blue
                 rawData[Int(byteIndex + 3)] = pixel.alpha // Alpha
                 byteIndex += 4;
-
+                
             } // for row
             //endian
         } // for col
@@ -103,6 +103,41 @@ public class MIST: NSObject {
         return createImage(width, height: height, pixelEqu: { (row, col, time) -> (red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) in
             let color = UInt8(255 - ((255 * row) / width))
             return (color, color, color, 255)
+        })
+    }
+    
+    /**
+    * Evaluate an expression at a x,y,time, all of which are in the range -1..1.
+    */
+    /**
+    * Evaluate an expression at a particluar location in a width-by-height image.
+
+    class func evalAt(exp:MIST, x: UInt, y: UInt, time: NSDate, width:UInt, height:UInt) -> (red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) {
+        let x = Double(2 * (x - (width  / 2)) / width)
+        let y = Double(2 * (y - (height / 2)) / height)
+        
+        let dict: [String: Double] = ["x": x , "y": y];
+        
+        let tmp = MISTapp.evaluate(exp, dict: dict);
+        
+        let component = UInt8(tmp*127.5+127.5);
+        
+        return (red: component, green: component, blue: component, alpha: 255)
+        
+    }*/
+    
+    class func render(exp:MIST, resolution:UInt) -> UIImage{
+        return createImage(resolution, height: resolution, pixelEqu: { (row, col, time) -> (red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) in
+            
+            let x = 2 * (row - (resolution / 2) / resolution)
+            let y = 2 * (col - (resolution / 2) / resolution)
+            
+            let dict: [String: Double] = ["x": Double(x) , "y": Double(y)];
+            
+            let tmp = MISTapp.evaluate(exp, dict: dict);
+            
+            let component = UInt8(tmp*127.5+127.5);
+            return (red: component, green: component, blue: component, alpha:255)
         })
     }
 }

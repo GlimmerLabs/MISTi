@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14B17" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="jHx-Sl-E4Q">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="jHx-Sl-E4Q">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
@@ -17,7 +17,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="-1" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="UoT-NP-UCQ">
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="50" minValue="1" maxValue="1000" translatesAutoresizingMaskIntoConstraints="NO" id="UoT-NP-UCQ">
                                 <rect key="frame" x="0.0" y="-15" width="118" height="31"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="270" id="Gny-EO-wIi"/>
@@ -71,27 +71,52 @@
                                     </mask>
                                 </variation>
                             </imageView>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CBD-PC-gno">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                                <items>
+                                    <barButtonItem title="Y" id="LLn-2c-W2L">
+                                        <connections>
+                                            <action selector="didClickYButton:" destination="jHx-Sl-E4Q" id="EA3-oC-ybk"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="S2L-WV-PfR"/>
+                                    <barButtonItem title="X" id="itH-Jo-uLy">
+                                        <connections>
+                                            <action selector="didClickXButton:" destination="jHx-Sl-E4Q" id="qV0-LN-qsF"/>
+                                        </connections>
+                                    </barButtonItem>
+                                </items>
+                            </toolbar>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="centerX" secondItem="y5c-ZG-GOS" secondAttribute="centerX" id="3bF-8M-iJE"/>
                             <constraint firstItem="b1t-T4-Stj" firstAttribute="top" secondItem="UoT-NP-UCQ" secondAttribute="bottom" constant="16" id="FR3-EG-WLm"/>
+                            <constraint firstItem="CBD-PC-gno" firstAttribute="leading" secondItem="wvW-a8-VEO" secondAttribute="leading" id="Hb5-Sr-0Bf"/>
+                            <constraint firstAttribute="trailing" secondItem="CBD-PC-gno" secondAttribute="trailing" id="PLc-ql-EYn"/>
                             <constraint firstAttribute="centerX" secondItem="UoT-NP-UCQ" secondAttribute="centerX" id="Uor-Tc-XzA"/>
                             <constraint firstAttribute="centerX" secondItem="b1t-T4-Stj" secondAttribute="centerX" id="d1P-RW-RWa"/>
                             <constraint firstItem="y5c-ZG-GOS" firstAttribute="top" secondItem="zRY-BZ-8xu" secondAttribute="bottom" constant="112" id="kzc-vL-s4v"/>
                             <constraint firstItem="UoT-NP-UCQ" firstAttribute="top" secondItem="y5c-ZG-GOS" secondAttribute="bottom" constant="8" id="oWA-bh-NKU"/>
+                            <constraint firstAttribute="centerX" secondItem="CBD-PC-gno" secondAttribute="centerX" id="wtD-L2-MmL"/>
+                            <constraint firstAttribute="bottom" secondItem="CBD-PC-gno" secondAttribute="bottom" id="z7j-OA-Hdf"/>
                         </constraints>
                         <variation key="default">
                             <mask key="subviews">
                                 <exclude reference="UoT-NP-UCQ"/>
                                 <exclude reference="b1t-T4-Stj"/>
                                 <exclude reference="y5c-ZG-GOS"/>
+                                <exclude reference="CBD-PC-gno"/>
                             </mask>
                             <mask key="constraints">
                                 <exclude reference="FR3-EG-WLm"/>
                                 <exclude reference="d1P-RW-RWa"/>
                                 <exclude reference="Uor-Tc-XzA"/>
                                 <exclude reference="oWA-bh-NKU"/>
+                                <exclude reference="Hb5-Sr-0Bf"/>
+                                <exclude reference="PLc-ql-EYn"/>
+                                <exclude reference="wtD-L2-MmL"/>
+                                <exclude reference="z7j-OA-Hdf"/>
                                 <exclude reference="3bF-8M-iJE"/>
                                 <exclude reference="kzc-vL-s4v"/>
                             </mask>
@@ -101,12 +126,17 @@
                                 <include reference="UoT-NP-UCQ"/>
                                 <include reference="b1t-T4-Stj"/>
                                 <include reference="y5c-ZG-GOS"/>
+                                <include reference="CBD-PC-gno"/>
                             </mask>
                             <mask key="constraints">
                                 <include reference="FR3-EG-WLm"/>
                                 <include reference="d1P-RW-RWa"/>
                                 <include reference="Uor-Tc-XzA"/>
                                 <include reference="oWA-bh-NKU"/>
+                                <include reference="Hb5-Sr-0Bf"/>
+                                <include reference="PLc-ql-EYn"/>
+                                <include reference="wtD-L2-MmL"/>
+                                <include reference="z7j-OA-Hdf"/>
                                 <include reference="3bF-8M-iJE"/>
                                 <include reference="kzc-vL-s4v"/>
                             </mask>
@@ -114,6 +144,7 @@
                     </view>
                     <connections>
                         <outlet property="canvas" destination="y5c-ZG-GOS" id="bKF-L4-5fO"/>
+                        <outlet property="resSlider" destination="UoT-NP-UCQ" id="Oz7-Lp-nvc"/>
                         <outlet property="value" destination="b1t-T4-Stj" id="kQh-u8-0SC"/>
                     </connections>
                 </viewController>

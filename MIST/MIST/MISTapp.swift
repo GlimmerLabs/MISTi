@@ -10,25 +10,22 @@ import UIKit
 
 public class MISTapp: MIST {
     var operation: String
-    var operands: Array<MIST?>
-    let letters = NSCharacterSet.letterCharacterSet()
-    let digits = NSCharacterSet.decimalDigitCharacterSet()
+    var operands: Array<MIST>
     
     convenience override init (){
         self.init(operation: "", operands: [])
     }
     
-    init (operation: String, operands: Array<MIST?>){
+    init (operation: String, operands: Array<MIST>){
         self.operation = operation
         self.operands = operands
     }
     
     class func evaluate (exp: MIST, dict:Dictionary<String,Double>)->Double{
-        if exp is MISTval {
-            var val = exp as MISTval
-            return dict[val.name]!
+        if (exp is MISTval) {
+            return dict[(exp as MISTval).name]!
         }
-        else if exp is MISTnum {
+        else if (exp is MISTnum) {
             var num = exp as MISTnum
             return num.val
         }
@@ -37,13 +34,13 @@ public class MISTapp: MIST {
             var app = exp as MISTapp
             var intermediate = [Double]()
             
-            for i in 0...app.operands.count {
-                intermediate[i] = self.evaluate(app.operands[i]!, dict: dict)
+            for operand in app.operands {
+                intermediate.append(self.evaluate(operand, dict: dict))
             }
             switch app.operation {
             case "wsum", "sum":
                 var result:Double = 0
-                for i in 0...intermediate.count {
+                for (var i = 0; i < intermediate.count; i++){
                     result += intermediate[i]
                 }
                 if (app.operation == "sum"){
@@ -63,28 +60,20 @@ public class MISTapp: MIST {
         }
     }
     
-    class func wrap (val: Double) ->Double {
-        // Need to be completed.
-        parse("dog")
-        return 0.1
+    class func wrap (val: Double) -> Double {
+        return (val % 2) - 1;
     }
     
-    class func peekType (tokens: Array<MISTtoken?>) -> MISTtoken.types{
-        if (tokens[0] == nil) {
-            return MISTtoken.types.UNKNOWN
-        }
-        else {
-            return tokens[0]!.type
-        }
-        
+    class func peekType (tokens: Array<MISTtoken>) -> MISTtoken.types{
+        return tokens[0].type
     }
     
-    class func kernel(var tokens: Array<MISTtoken?>, prefix : String) -> MIST{
+    class func kernel(var tokens: Array<MISTtoken>, prefix : String) -> MIST{
         //This should never happen, but let's be safe.
         if tokens.count == 0 {
             println("Unexpected end of input")
         } // if tokens.count == 0
-        var tok: MISTtoken! = tokens.removeAtIndex(0)
+        var tok = tokens.removeAtIndex(0)
         if tok.type == MISTtoken.types.EOF {
             tok.parseError("Unexpected end of input", row: tok.row, col: tok.col)
         }
@@ -97,18 +86,18 @@ public class MISTapp: MIST {
             
         else if peekType(tokens) == MISTtoken.types.OPEN {
             tokens.removeAtIndex(0)
-            var children = Array<MIST?>()
+            var children = Array<MIST>()
             while(peekType(tokens) != MISTtoken.types.CLOSE){
                 // The real recursion rite here
-                children.append(kernel(tokens, prefix: prefix))
                 if peekType(tokens) == MISTtoken.types.COMMA {
                     tokens.removeAtIndex(0)
                     if (peekType(tokens) == MISTtoken.types.CLOSE) {
-                        tokens[0]!.parseError("Close paren follows comma.", row: tokens[0]!.row, col: tokens[0]!.col)
+                        tokens[0].parseError("Close paren follows comma.", row: tokens[0].row, col: tokens[0].col)
                     } // if there's a close paren after a comma
                 } // if there's a comma
+                children.append(kernel(tokens, prefix: prefix))
+                tokens.removeAtIndex(0)
             } // while
-            tokens.removeAtIndex(0)
             return MISTapp(operation: (prefix + tok.text), operands: children)
         }// if it's a function call
         // otherwise it's a singleton
@@ -126,8 +115,8 @@ public class MISTapp: MIST {
         
     } // parse(exp, prefix)
     
-    class func parse (exp: String){
-        parse(exp, prefix: "");
+    class func parse (exp: String) -> MIST{
+        return parse(exp, prefix: "");
     }
     
     class func tokenize (str: String) -> Array<MISTtoken>{
@@ -175,9 +164,10 @@ public class MISTapp: MIST {
                 var c : Character?
                 c = input.peek();
                 
-                while ((c != nil) && ((c >= "0" && c <= "9") || (c >= "A" && c <= "Z") || (c >= "a" && c >= "z") || (c == "."))) {
+                while ((c != nil) && ((c >= "0" && c <= "9") || (c >= "A" && c <= "Z") || (c >= "a" && c <= "z") || (c == "."))) {
                     id += String(c!);
                     input.next();
+                    c = input.peek()
                 } // while
                 ch.type = MISTtoken.types.ID;
                 ch.text = id;
@@ -189,5 +179,5 @@ public class MISTapp: MIST {
         }
         return tokens
     }
-
+    
 }
