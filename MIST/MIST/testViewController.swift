@@ -11,18 +11,12 @@ import UIKit
 class testViewController: UIViewController {
     @IBOutlet weak var canvas: UIImageView!
     @IBOutlet weak var value: UILabel!
-    @IBOutlet weak var resSlider: UISlider!
     
-    
-    
-    @IBAction func didClickXButton(sender: AnyObject) {
-    }
-
-    @IBAction func didClickYButton(sender: AnyObject) {
-    }
     override func viewDidLoad() {
-        let exp = MISTapp.parse("x");
-        canvas.image = MIST.render(exp, resolution: 100);
+        let string = "wsum(mult(x,x),mult(y,y))";
+        let exp = MIST.parse(string);
+        value.text = string
+        canvas.image = MIST.render(exp, height: 100, width: 100);
     }
 
 }

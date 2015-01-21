@@ -9,6 +9,218 @@
 import UIKit
 
 public class MIST: NSObject {
+    class func evaluate (exp: MIST, dict:Dictionary<String,Double>)->Double{
+        if exp is MISTval {
+            if let val = dict[(exp as MISTval).name]{
+                return val
+            }
+            else {
+                return 0.0
+            }
+        }
+        else if exp is MISTnum {
+            var num = exp as MISTnum
+            return num.val
+        }
+        else if exp is MISTapp{ // exp is MISTapp
+            
+            var app = exp as MISTapp
+            var intermediate = [Double]()
+            
+            for operand in app.operands {
+                intermediate.append(evaluate(operand, dict: dict))
+            }
+            switch app.operation {
+            case "wsum", "sum":
+                var result:Double = 0
+                for (var i = 0; i < intermediate.count; i++){
+                    result += intermediate[i]
+                }
+                if (app.operation == "sum"){
+                    return constrain(result)
+                }
+                else {
+                    return wrap(result);
+                }
+            case "abs":
+                return abs(intermediate[0])
+            case "sine":
+                return wrap(abs(M_PI * intermediate[0]));
+            case "mult":
+                var result:Double = 1
+                for (var i = 0; i < intermediate.count; i++){
+                    result *= intermediate[i]
+                }
+                return constrain(result)
+            case "sign":
+                if (intermediate[0] < 0){
+                    return -1;
+                }
+                else if (intermediate[0] > 0){
+                    return 1
+                }
+                else {
+                    return 0;
+                }
+            default:
+                println("Error: Unknown operation.")
+                return 0.0
+            }
+        }
+        else {
+            return 0.0;
+        }
+        
+    }
+    
+    class func constrain (value : Double) -> Double {
+        if (value < -1){
+            return -1
+        }
+        else if (value > 1){
+            return 1
+        }
+        else{
+            return value
+        }
+    }
+    
+    class func wrap (val: Double) -> Double {
+        if (val < -1){
+            return wrap(val + 2)
+        }
+        else if (val > 1){
+            return wrap(val - 2)
+        }
+        else{
+            return val
+        }
+    }
+    
+    class func peekType (tokens: Array<MISTtoken>) -> MISTtoken.types{
+        if (tokens.count > 0){
+            return tokens[0].type
+        }
+        else {
+            return MISTtoken.types.EOF
+        }
+    }
+    
+    class func kernel(inout tokens: Array<MISTtoken>, prefix : String) -> MIST{
+        //This should never happen, but let's be safe.
+        if tokens.count == 0 {
+            println("Unexpected end of input")
+        } // if tokens.count == 0
+        var tok = tokens.removeAtIndex(0)
+        if tok.type == MISTtoken.types.EOF {
+            tok.parseError("Unexpected end of input", row: tok.row, col: tok.col)
+        }
+        else if tok.type == MISTtoken.types.NUM {
+            return MISTval(name: tok.text)
+        }
+        else if tok.type != MISTtoken.types.ID {
+            tok.parseError("Unexpected token (" + tok.text + ")", row: tok.row, col: tok.col)
+        }
+            
+        else if peekType(tokens) == MISTtoken.types.OPEN {
+            tokens.removeAtIndex(0)
+            var children = Array<MIST>()
+            while(peekType(tokens) != MISTtoken.types.CLOSE){
+                // The real recursion rite here
+                if peekType(tokens) == MISTtoken.types.COMMA {
+                    tokens.removeAtIndex(0)
+                    if (peekType(tokens) == MISTtoken.types.CLOSE) {
+                        tokens[0].parseError("Close paren follows comma.", row: tokens[0].row, col: tokens[0].col)
+                    } // if there's a close paren after a comma
+                } // if there's a comma
+                children.append(kernel(&tokens, prefix: prefix))
+            } // while
+            tokens.removeAtIndex(0)
+            return MISTapp(operation: (prefix + tok.text), operands: children)
+        }// if it's a function call
+            // otherwise it's a singleton
+        else {
+            return MISTval(name: tok.text)
+        }
+        // if it's a singleton
+        return MIST()
+    } // kernel
+    
+    class func parse (str: String, prefix : String)-> MIST {
+        var tokens = tokenize(str)
+        var result = kernel(&tokens, prefix: prefix)
+        if ((tokens.count > 1) || (peekType(tokens) != MISTtoken.types.EOF)) {
+            tokens[0].parseError("Extra text after expression", row: tokens[0].row, col: tokens[0].col)
+        }
+        return result
+        
+    } // parse(exp, prefix)
+    
+    class func parse (exp: String) -> MIST{
+        return parse(exp, prefix: "");
+    }
+    
+    class func tokenize (str: String) -> Array<MISTtoken>{
+        var tokens = [MISTtoken]()
+        var input = MISTinput(text: str);
+        input.skipWhitespace()
+        while !input.eof(){
+            var ch = input.next()!
+            if (ch.text == "("){
+                ch.type = MISTtoken.types.OPEN
+                tokens.append(ch)
+            }
+            else if (ch.text == ")"){
+                ch.type = MISTtoken.types.CLOSE
+                tokens.append(ch)
+            }
+            else if (ch.text == ","){
+                ch.type = MISTtoken.types.COMMA
+                tokens.append(ch)
+            }
+            else if (ch.text.rangeOfString("[0-9-.]", options: .RegularExpressionSearch) != nil){
+                var num = ch.text
+                var dot = false;
+                dot = (ch.text == ".")
+                var c : Character?
+                
+                c = input.peek()
+                while ((c != nil) && (((c >= "0") && (c <= "9")) || ((!dot) && (c! == ".")))){
+                    input.next()
+                    num += String(c!)
+                    if (c == ".") { dot = true; }
+                    c = input.peek()
+                } // while
+                if (num == "-") {
+                    ch.parseError("Singleton negative signs not allowed.", row: ch.row, col: ch.col)
+                } // if we only saw a negative sign
+                ch.type = MISTtoken.types.NUM;
+                ch.text = num;
+                tokens.append(ch);
+            }
+            else if ((ch.text.rangeOfString("[A-Za-z]", options: .RegularExpressionSearch)) != nil) {
+                var col = ch.col;
+                var row = ch.row;
+                var id = ch.text;
+                var c : Character?
+                c = input.peek();
+                
+                while ((c != nil) && ((c >= "0" && c <= "9") || (c >= "A" && c <= "Z") || (c >= "a" && c <= "z") || (c == "."))) {
+                    id += String(c!);
+                    input.next();
+                    c = input.peek()
+                } // while
+                ch.type = MISTtoken.types.ID;
+                ch.text = id;
+                tokens.append(ch);
+            } // if it's an id
+            else {
+                ch.parseError("Invalid character (" + ch.text + ")", row: ch.row, col: ch.col);
+            } // else
+        }
+        return tokens
+    }
+    
     func depth(exp:MIST) -> Int
     {
         // If it's an application
@@ -46,14 +258,6 @@ public class MIST: NSObject {
         }
         return false;
     } // MIST.hasLoop
-    class func colorWithMISTComponents(var red : Float, var green: Float, var blue: Float) -> UIColor{
-        red = 1 - (red + 1) / 2
-        blue = 1 - (blue + 1) / 2
-        green = 1 - (green + 1) / 2
-        
-        return UIColor(red: CGFloat(red), green: CGFloat(green), blue: CGFloat(blue), alpha: 1)
-        
-    }
     
     class func createImage(width: UInt, height: UInt, pixelEqu: (row: UInt, col: UInt, time: NSDate) -> (red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8)) -> UIImage{
         // http://brandontreb.com/image-manipulation-retrieving-and-updating-pixel-values-for-a-uiimage
@@ -93,47 +297,18 @@ public class MIST: NSObject {
         return rawImage!
     }
     
-    class func x(width: UInt, height: UInt)->UIImage{
-        return createImage(width, height: height, pixelEqu: { (row, col, time) -> (red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) in
-            let color = UInt8(255 - ((255 * col) / width))
-            return (color, color, color, 255)
-        })
-    }
-    class func y(width: UInt, height: UInt)->UIImage{
-        return createImage(width, height: height, pixelEqu: { (row, col, time) -> (red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) in
-            let color = UInt8(255 - ((255 * row) / width))
-            return (color, color, color, 255)
-        })
-    }
-    
     /**
-    * Evaluate an expression at a x,y,time, all of which are in the range -1..1.
+    * Evaluate an expression at a particluar location in a resolution-by-resolution image.
     */
-    /**
-    * Evaluate an expression at a particluar location in a width-by-height image.
-
-    class func evalAt(exp:MIST, x: UInt, y: UInt, time: NSDate, width:UInt, height:UInt) -> (red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) {
-        let x = Double(2 * (x - (width  / 2)) / width)
-        let y = Double(2 * (y - (height / 2)) / height)
-        
-        let dict: [String: Double] = ["x": x , "y": y];
-        
-        let tmp = MISTapp.evaluate(exp, dict: dict);
-        
-        let component = UInt8(tmp*127.5+127.5);
-        
-        return (red: component, green: component, blue: component, alpha: 255)
-        
-    }*/
     
-    class func render(exp:MIST, resolution:UInt) -> UIImage{
-        return createImage(resolution, height: resolution, pixelEqu: { (row, col, time) -> (red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) in
-            let x = Double(col) / Double(resolution)
-            let y = Double(row) / Double(resolution)
+    class func render(exp:MIST, height: UInt, width: UInt) -> UIImage{
+        return createImage(width, height: height, pixelEqu: { (row, col, time) -> (red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) in
+            let x = ((Double(col) / Double(width)) * 2) - 1
+            let y = ((Double(row) / Double(height)) * 2) - 1
             
             let dict: [String: Double] = ["x": x , "y": y];
             
-            let tmp = MISTapp.evaluate(exp, dict: dict);
+            let tmp = (MIST.evaluate(exp, dict: dict) + 1) / 2
             
             var component = 255 - (tmp*255);
             
